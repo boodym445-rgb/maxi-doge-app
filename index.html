@@ -1,136 +1,214 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Maxi Doge App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --bg-color: #0f1015;
-            --card-bg: #1a1c23;
-            --accent-color: #f39c12;
-            --text-color: #ffffff;
-            --text-sub: #a0a5b5;
-        }
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; }
-        body { background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; padding-bottom: 70px; overflow-x: hidden; }
-        
-        /* Top Bar */
-        .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: var(--card-bg); border-bottom: 1px solid #2a2d3d; }
-        .user-info { display: flex; align-items: center; gap: 10px; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-color); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; color: #000; }
-        .price-badge { background: rgba(243, 156, 18, 0.15); color: var(--accent-color); border: 1px solid var(--accent-color); padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
-
-        /* Pages System */
-        .page { display: none; padding: 20px; text-align: center; }
-        .page.active { display: block; }
-
-        /* Balance & Mining */
-        .balance-container { margin: 20px 0; }
-        .balance-title { color: var(--text-sub); font-size: 14px; }
-        .balance-amount { font-size: 38px; font-weight: bold; color: var(--accent-color); display: flex; align-items: center; justify-content: center; gap: 8px; }
-        
-        .coin-btn {
-            width: 220px; height: 220px; border-radius: 50%;
-            background: radial-gradient(circle, #f39c12 0%, #d35400 100%);
-            margin: 30px auto; display: flex; align-items: center; justify-content: center;
-            font-size: 90px; cursor: pointer; box-shadow: 0 0 35px rgba(243, 156, 18, 0.4);
-            transition: transform 0.08s ease; position: relative; border: 4px solid #f1c40f;
-        }
-        .coin-btn:active { transform: scale(0.93); }
-
-        .energy-bar-container { background: #2a2d3d; border-radius: 10px; height: 12px; width: 80%; margin: 15px auto; overflow: hidden; }
-        .energy-fill { background: var(--accent-color); height: 100%; width: 100%; transition: width 0.2s; }
-
-        /* Navigation Bar */
-        .navbar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #2a2d3d; z-index: 100; }
-        .nav-item { color: var(--text-sub); font-size: 11px; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
-        .nav-item.active { color: var(--accent-color); font-weight: bold; }
-        .nav-icon { font-size: 20px; }
-
-        /* Cards & Buttons */
-        .card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 12px; text-align: right; border: 1px solid #2a2d3d; }
-        .btn { background: var(--accent-color); color: #000; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 8px; }
-        .btn-disabled { background: #3a3d4d; color: #7a7e8d; cursor: not-allowed; }
-
-        /* Wheel */
-        .wheel-container { position: relative; width: 200px; height: 200px; margin: 20px auto; border-radius: 50%; border: 5px solid var(--accent-color); display: flex; align-items: center; justify-content: center; background: #222531; font-size: 24px; font-weight: bold; color: var(--accent-color); }
-
-        /* Float Number Effect */
-        .floating-num { position: absolute; color: #fff; font-weight: bold; font-size: 24px; animation: floatUp 0.8s ease-out forwards; pointer-events: none; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Maxi Doge ($MAXI)</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background: #0f172a; color: white; font-family: system-ui, -apple-system, sans-serif; user-select: none; }
+    .tap-btn { transition: transform 0.05s ease; }
+    .tap-btn:active { transform: scale(0.92); }
+    .nav-active { color: #f59e0b; border-top: 2px solid #f59e0b; }
+  </style>
 </head>
-<body>
+<body class="flex flex-col h-screen justify-between pb-24 overflow-hidden">
 
-    <div class="top-bar">
-        <div class="user-info">
-            <div class="user-avatar" id="uAvatar">U</div>
-            <div>
-                <div style="font-weight: bold; font-size: 14px;" id="uName">المستخدم</div>
-                <div style="font-size: 11px; color: var(--text-sub);" id="uHandle">@username</div>
-            </div>
-        </div>
-        <div class="price-badge">سعر الإدراج المتوقع: $0.09</div>
+  <!-- Header -->
+  <div class="p-3 bg-slate-800 flex justify-between items-center shadow-lg rounded-b-xl">
+    <div class="flex items-center space-x-2 space-x-reverse">
+      <div id="user-avatar" class="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center font-bold text-slate-900">U</div>
+      <div>
+        <h2 id="user-name" class="font-bold text-xs">المستخدم</h2>
+        <span class="text-[10px] text-amber-400 bg-amber-950/50 px-2 py-0.5 rounded-full border border-amber-500/30">سعر الإدراج: $0.09</span>
+      </div>
+    </div>
+    <div class="text-left">
+      <span class="text-[10px] text-slate-400">الرصيد</span>
+      <div class="flex items-center space-x-1 space-x-reverse">
+        <i class="fa-solid fa-coins text-amber-400 text-sm"></i>
+        <span id="balance" class="text-base font-extrabold text-amber-400">0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 1: Tap / Mining -->
+  <div id="page-tap" class="page-content flex-1 flex flex-col items-center justify-center p-4">
+    <div class="text-center mb-4">
+      <div class="flex items-center justify-center space-x-2 space-x-reverse">
+        <span class="text-3xl font-extrabold text-amber-400" id="tap-balance">0</span>
+        <i class="fa-solid fa-coins text-amber-400 text-2xl"></i>
+      </div>
+      <p class="text-[11px] text-slate-400 mt-1">اضغط للتعدين وتجميع عملات $MAXI</p>
     </div>
 
-    <div id="page-mine" class="page active">
-        <div class="balance-container">
-            <div class="balance-title">رصيد عملات $MAXI</div>
-            <div class="balance-amount">🪙 <span id="balance">0</span></div>
-        </div>
+    <button id="tap-btn" class="tap-btn relative w-48 h-48 rounded-full bg-gradient-to-b from-amber-400 to-amber-600 p-2 shadow-2xl flex items-center justify-center border-4 border-amber-300">
+      <img src="https://assets.coingecko.com/coins/images/5/large/dogecoin.png" class="w-36 h-36 rounded-full pointer-events-none" />
+    </button>
 
-        <div class="coin-btn" id="coinBtn">🐕</div>
+    <div class="w-full max-w-xs mt-6">
+      <div class="flex justify-between text-xs mb-1">
+        <span class="flex items-center gap-1"><i class="fa-solid fa-bolt text-amber-400"></i> الطاقة اليومية</span>
+        <span id="energy-text">1000 / 1000</span>
+      </div>
+      <div class="w-full bg-slate-700 h-2.5 rounded-full overflow-hidden">
+        <div id="energy-bar" class="bg-amber-500 h-full w-full transition-all duration-200"></div>
+      </div>
+    </div>
+  </div>
 
-        <div style="font-size: 13px; color: var(--text-sub);">الطاقة اليومية: <span id="energy">1000</span> / 1000⚡</div>
-        <div class="energy-bar-container">
-            <div class="energy-fill" id="energyBar"></div>
+  <!-- Page 2: Tasks -->
+  <div id="page-tasks" class="page-content hidden flex-1 p-4 overflow-y-auto">
+    <h2 class="text-lg font-bold mb-3 text-amber-400 flex items-center gap-2"><i class="fa-solid fa-list-check"></i> المهام اليومية</h2>
+    <div id="tasks-list" class="space-y-2">
+      <div class="bg-slate-800 p-3 rounded-xl flex justify-between items-center border border-slate-700">
+        <div>
+          <h4 class="font-bold text-xs">متابعة قناة التليجرام</h4>
+          <span class="text-[11px] text-amber-400 font-semibold">+5,000 $MAXI</span>
         </div>
+        <button onclick="completeTask(1, 5000)" class="bg-amber-500 text-slate-900 px-3 py-1.5 text-xs font-bold rounded-lg shadow">إكمال</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 3: Wheel of Fortune -->
+  <div id="page-wheel" class="page-content hidden flex-1 flex flex-col items-center justify-center p-4 text-center">
+    <h2 class="text-lg font-bold mb-1 text-amber-400 flex items-center gap-2"><i class="fa-solid fa-dharmachakra"></i> عجلة الحظ</h2>
+    <p class="text-xs text-slate-400 mb-6">احصل على فرصة ربح عملات مجانية يومياً!</p>
+    <div class="w-44 h-44 border-8 border-amber-500 rounded-full flex items-center justify-center bg-slate-800 mb-6 text-xl font-bold shadow-xl">
+      🎁 1,000 $MAXI
+    </div>
+    <button onclick="spinWheel()" class="bg-gradient-to-r from-amber-500 to-amber-600 text-slate-900 font-bold px-8 py-2.5 rounded-xl shadow-lg text-sm">تدوير العجلة</button>
+  </div>
+
+  <!-- Page 4: Wallet & Account -->
+  <div id="page-wallet" class="page-content hidden flex-1 p-4 flex flex-col items-center justify-center text-center">
+    <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 w-full max-w-xs mb-5 shadow-xl">
+      <span class="text-xs text-slate-400">إجمالي الرصيد المحفوظ</span>
+      <h2 class="text-2xl font-black text-amber-400 my-2 flex items-center justify-center gap-2" id="wallet-balance">
+        0 <i class="fa-solid fa-coins text-amber-400 text-xl"></i>
+      </h2>
+      <p class="text-[11px] text-emerald-400 font-medium">🔒 محمي ومحفوظ في قاعدة البيانات</p>
     </div>
 
-    <div id="page-tasks" class="page">
-        <h2>📋 المهام اليومية</h2>
-        <p style="color: var(--text-sub); font-size: 13px;">أكمل المهام التالية للحصول على عملات إضافية!</p>
-        <div id="tasksList">
-            <div class="card">
-                <h3>📢 الاشتراك بالقناة الرسمية</h3>
-                <p style="font-size: 12px; color: var(--text-sub);">احصل على +500 عملة MAXI</p>
-                <button class="btn" onclick="completeTask(500, this)">إكمال المهمة</button>
-            </div>
-        </div>
+    <div class="w-full max-w-xs space-y-3">
+      <div class="relative">
+        <button disabled class="w-full bg-slate-800 text-slate-500 font-bold py-2.5 text-xs rounded-xl border border-slate-700 cursor-not-allowed">إيداع (Deposit)</button>
+        <span class="absolute top-2 left-2 text-[9px] bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full">تحت الصيانة 🛠️</span>
+      </div>
+      <div class="relative">
+        <button disabled class="w-full bg-slate-800 text-slate-500 font-bold py-2.5 text-xs rounded-xl border border-slate-700 cursor-not-allowed">سحب (Withdraw)</button>
+        <span class="absolute top-2 left-2 text-[9px] bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full">تحت الصيانة 🛠️</span>
+      </div>
     </div>
+  </div>
 
-    <div id="page-ref" class="page">
-        <h2>👥 برنامج الإحالة</h2>
-        <p style="color: var(--text-sub); font-size: 13px;">ادعُ أصدقائك واحصل على 1000 عملة عن كل صديق!</p>
-        <div class="card">
-            <div style="font-size: 12px; color: var(--text-sub);">رابط الإحالة الخاص بك:</div>
-            <input type="text" id="refLink" readonly style="width: 100%; background: #121319; color: #fff; border: 1px solid #2a2d3d; padding: 8px; margin: 8px 0; border-radius: 6px; text-align: center;" value="جاري التحميل...">
-            <button class="btn" onclick="copyRef()">نسخ الرابط</button>
-        </div>
+  <!-- Page 5: FAQ -->
+  <div id="page-faq" class="page-content hidden flex-1 p-4 overflow-y-auto space-y-3">
+    <h2 class="text-lg font-bold text-amber-400 mb-2 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> الأسئلة الشائعة</h2>
+    <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+      <h4 class="font-bold text-xs text-amber-300">متى يتم إدراج العملة؟</h4>
+      <p class="text-[11px] text-slate-300 mt-1">سعر الإدراج المتوقع هو $0.09 وسيتم التداول فور الانتهاء من التوزيع.</p>
     </div>
-
-    <div id="page-spin" class="page">
-        <h2>🎡 عجلة الحظ</h2>
-        <p style="color: var(--text-sub); font-size: 13px;">در العجلة يومياً واحصل على مكافآت عشوائية!</p>
-        <div class="wheel-container" id="wheel">🎁 MAXI</div>
-        <button class="btn" id="spinBtn" onclick="spinWheel()">تدوير العجلة (مجاناً)</button>
+    <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+      <h4 class="font-bold text-xs text-amber-300">كيف أزيد أرباحي؟</h4>
+      <p class="text-[11px] text-slate-300 mt-1">عن طريق دعوة الأصدقاء، التعدين اليومي، وإكمال المهام وعجلة الحظ.</p>
     </div>
+  </div>
 
-    <div id="page-profile" class="page">
-        <h2>👤 حسابي والفرص</h2>
-        <div class="card" style="text-align: center;">
-            <div style="color: var(--text-sub); font-size: 13px;">إجمالي الرصيد المحفوظ</div>
-            <div style="font-size: 28px; font-weight: bold; color: var(--accent-color); margin: 10px 0;">🪙 <span id="profileBalance">0</span></div>
-        </div>
+  <!-- Page 6: Admin Panel (Only for @boodymelpnna) -->
+  <div id="page-admin" class="page-content hidden flex-1 p-4 overflow-y-auto">
+    <h2 class="text-lg font-bold text-red-500 mb-3 flex items-center gap-2"><i class="fa-solid fa-user-shield"></i> لوحة تحكم الأدمن</h2>
+    <div class="bg-slate-800 p-4 rounded-xl space-y-3 border border-red-500/30">
+      <h3 class="font-bold text-xs">إضافة مهمة جديدة للمستخدمين</h3>
+      <input id="admin-task-title" type="text" placeholder="عنوان المهمة" class="w-full p-2 bg-slate-900 text-xs rounded-lg border border-slate-700 text-white">
+      <input id="admin-task-reward" type="number" placeholder="المكافأة ($MAXI)" class="w-full p-2 bg-slate-900 text-xs rounded-lg border border-slate-700 text-white">
+      <button onclick="addAdminTask()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 text-xs rounded-lg shadow">نشر المهمة</button>
+    </div>
+  </div>
 
-        <div class="card">
-            <h3>💳 المحفظة والمعاملات</h3>
-            <p style="font-size: 12px; color: #e74c3c;">⚠️ خدمات السحب والإيداع متوقفة حالياً حتى تاريخ الإدراج الرسمي ($0.09).</p>
-            <button class="btn btn-disabled" disabled>📥 إيداع (تحت الصيانة 🛠️)</button>
-            <button class="btn btn-disabled" disabled style="margin-top: 8px;">📤 سحب الأرصدة (تحت الصيانة 🛠️)</button>
-        </div>
+  <!-- Bottom Navigation -->
+  <div class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 flex justify-around p-2 text-[10px] z-50">
+    <button onclick="showPage('tap')" id="nav-tap" class="flex flex-col items-center nav-active py-1 px-2"><i class="fa-solid fa-hand-pointer text-base mb-1"></i>تعدين</button>
+    <button onclick="showPage('tasks')" id="nav-tasks" class="flex flex-col items-center text-slate-400 py-1 px-2"><i class="fa-solid fa-list-check text-base mb-1"></i>المهام</button>
+    <button onclick="showPage('wheel')" id="nav-wheel" class="flex flex-col items-center text-slate-400 py-1 px-2"><i class="fa-solid fa-dharmachakra text-base mb-1"></i>العجلة</button>
+    <button onclick="showPage('wallet')" id="nav-wallet" class="flex flex-col items-center text-slate-400 py-1 px-2"><i class="fa-solid fa-wallet text-base mb-1"></i>الحساب</button>
+    <button onclick="showPage('faq')" id="nav-faq" class="flex flex-col items-center text-slate-400 py-1 px-2"><i class="fa-solid fa-circle-question text-base mb-1"></i>الأسئلة</button>
+    <button id="admin-nav-btn" onclick="showPage('admin')" class="hidden flex flex-col items-center text-red-400 py-1 px-2"><i class="fa-solid fa-user-shield text-base mb-1"></i>الأدمن</button>
+  </div>
 
-        <div class="card">
-            <h3>❓ الأسئلة الشائعة (
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    let balance = parseInt(localStorage.getItem('maxi_balance')) || 0;
+    let energy = parseInt(localStorage.getItem('maxi_energy')) || 1000;
+    const user = tg.initDataUnsafe?.user || { id: 12345, first_name: "زائر", username: "guest" };
+
+    // Set User Data
+    document.getElementById('user-name').innerText = user.first_name;
+    document.getElementById('user-avatar').innerText = user.first_name[0] || "U";
+    updateUI();
+
+    // Check Admin Privilege
+    if (user.username === "boodymelpnna") {
+      document.getElementById('admin-nav-btn').classList.remove('hidden');
+    }
+
+    // Tap Handling (Max 1000)
+    document.getElementById('tap-btn').addEventListener('click', (e) => {
+      if (energy > 0) {
+        balance += 1;
+        energy -= 1;
+        localStorage.setItem('maxi_balance', balance);
+        localStorage.setItem('maxi_energy', energy);
+        updateUI();
+      }
+    });
+
+    function updateUI() {
+      document.getElementById('balance').innerText = balance.toLocaleString();
+      document.getElementById('tap-balance').innerText = balance.toLocaleString();
+      document.getElementById('wallet-balance').innerHTML = balance.toLocaleString() + ' <i class="fa-solid fa-coins text-amber-400 text-lg"></i>';
+      document.getElementById('energy-text').innerText = energy + " / 1000";
+      document.getElementById('energy-bar').style.width = (energy / 10) + "%";
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.fixed button').forEach(b => {
+        b.classList.remove('nav-active', 'text-amber-400');
+        b.classList.add('text-slate-400');
+      });
+      document.getElementById('page-' + pageId).classList.remove('hidden');
+      const activeNav = document.getElementById('nav-' + pageId) || document.getElementById('admin-nav-btn');
+      activeNav.classList.add('nav-active');
+      activeNav.classList.remove('text-slate-400');
+    }
+
+    function spinWheel() {
+      balance += 1000;
+      localStorage.setItem('maxi_balance', balance);
+      updateUI();
+      alert("🎉 مبروك! فزت بـ 1,000 عملة $MAXI!");
+    }
+
+    function completeTask(id, reward) {
+      balance += reward;
+      localStorage.setItem('maxi_balance', balance);
+      updateUI();
+      alert("✅ تم إكمال المهمة وإضافة المكافأة!");
+    }
+
+    function addAdminTask() {
+      const title = document.getElementById('admin-task-title').value;
+      const reward = document.getElementById('admin-task-reward').value;
+      if (title && reward) {
+        alert("✅ تم إضافة المهمة بنجاح بصفة أدمن!");
+      }
+    }
+  </script>
+</body>
+</html>
