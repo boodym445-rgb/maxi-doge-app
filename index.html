@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maxi Doge Mining</title>
+    <!-- مكتبة تلجرام للـ Mini Apps -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            user-select: none;
+        }
+        h1 { color: #f39c12; margin-bottom: 5px; }
+        p { color: #888; font-size: 14px; }
+        .balance-box {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px auto;
+            width: 80%;
+            border: 1px solid #f39c12;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .coin-btn {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #f1c40f, #e67e22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin: 40px auto;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(243, 156, 18, 0.5);
+            transition: transform 0.1s ease;
+        }
+        .coin-btn:active {
+            transform: scale(0.92);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🐕 Maxi Doge ($MAXI)</h1>
+    <p>اضغط على العملة لتعدين $MAXI قبل الإدراج في أواخر 2026</p>
+
+    <div class="balance-box">
+        الرصيد: <span id="balance">0</span> MAXI
+    </div>
+
+    <div class="coin-btn" id="tapBtn">
+        🪙
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // ملء الشاشة داخل التلجرام
+
+        let balance = 0;
+        const balanceEl = document.getElementById('balance');
+        const tapBtn = document.getElementById('tapBtn');
+
+        tapBtn.addEventListener('click', () => {
+            balance += 10;
+            balanceEl.innerText = balance;
+            
+            // اهتزاز هاتف المستخدم عند اللمس (Haptic Feedback)
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium');
+            }
+        });
+    </script>
+</body>
+</html>
