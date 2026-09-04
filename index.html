@@ -75,12 +75,17 @@
 
   <!-- Page 3: Wheel of Fortune -->
   <div id="page-wheel" class="page-content hidden flex-1 flex flex-col items-center justify-center p-4 text-center">
-    <h2 class="text-lg font-bold mb-1 text-amber-400 flex items-center gap-2"><i class="fa-solid fa-dharmachakra"></i> عجلة الحظ</h2>
-    <p class="text-xs text-slate-400 mb-6">احصل على فرصة ربح عملات مجانية يومياً!</p>
-    <div class="w-44 h-44 border-8 border-amber-500 rounded-full flex items-center justify-center bg-slate-800 mb-6 text-xl font-bold shadow-xl">
-      🎁 1,000 $MAXI
+    <h2 class="text-lg font-bold mb-1 text-amber-400 flex items-center gap-2"><i class="fa-solid fa-dharmachakra"></i> عجلة الحظ العشوائية</h2>
+    <p class="text-xs text-slate-400 mb-6">جرّب حظك اليوم واحصل على جوائز متنوعة!</p>
+    
+    <div id="wheel-display" class="w-44 h-44 border-8 border-amber-500 rounded-full flex flex-col items-center justify-center bg-slate-800 mb-6 text-center shadow-xl p-2 transition-all duration-300">
+      <i class="fa-solid fa-gift text-3xl text-amber-400 mb-2"></i>
+      <span id="wheel-status-text" class="text-sm font-bold text-slate-200">اضغط لتدوير العجلة</span>
     </div>
-    <button onclick="spinWheel()" class="bg-gradient-to-r from-amber-500 to-amber-600 text-slate-900 font-bold px-8 py-2.5 rounded-xl shadow-lg text-sm">تدوير العجلة</button>
+
+    <button id="spin-btn" onclick="spinWheel()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-95 text-slate-900 font-bold px-8 py-2.5 rounded-xl shadow-lg text-sm transition-all">
+      🎯 تدوير العجلة الآن
+    </button>
   </div>
 
   <!-- Page 4: Wallet & Account -->
@@ -118,7 +123,7 @@
     </div>
   </div>
 
-  <!-- Page 6: Admin Panel (Only for @boodymelpnna) -->
+  <!-- Page 6: Admin Panel -->
   <div id="page-admin" class="page-content hidden flex-1 p-4 overflow-y-auto">
     <h2 class="text-lg font-bold text-red-500 mb-3 flex items-center gap-2"><i class="fa-solid fa-user-shield"></i> لوحة تحكم الأدمن</h2>
     <div class="bg-slate-800 p-4 rounded-xl space-y-3 border border-red-500/30">
@@ -147,17 +152,14 @@
     let energy = parseInt(localStorage.getItem('maxi_energy')) || 1000;
     const user = tg.initDataUnsafe?.user || { id: 12345, first_name: "زائر", username: "guest" };
 
-    // Set User Data
     document.getElementById('user-name').innerText = user.first_name;
     document.getElementById('user-avatar').innerText = user.first_name[0] || "U";
     updateUI();
 
-    // Check Admin Privilege
     if (user.username === "boodymelpnna") {
       document.getElementById('admin-nav-btn').classList.remove('hidden');
     }
 
-    // Tap Handling (Max 1000)
     document.getElementById('tap-btn').addEventListener('click', (e) => {
       if (energy > 0) {
         balance += 1;
@@ -184,15 +186,42 @@
       });
       document.getElementById('page-' + pageId).classList.remove('hidden');
       const activeNav = document.getElementById('nav-' + pageId) || document.getElementById('admin-nav-btn');
-      activeNav.classList.add('nav-active');
-      activeNav.classList.remove('text-slate-400');
+      if(activeNav) {
+        activeNav.classList.add('nav-active');
+        activeNav.classList.remove('text-slate-400');
+      }
     }
 
+    // --- عجلة الحظ العشوائية الجديدة ---
     function spinWheel() {
-      balance += 1000;
-      localStorage.setItem('maxi_balance', balance);
-      updateUI();
-      alert("🎉 مبروك! فزت بـ 1,000 عملة $MAXI!");
+      const btn = document.getElementById('spin-btn');
+      const statusText = document.getElementById('wheel-status-text');
+      
+      btn.disabled = true;
+      btn.innerText = "جاري التدوير... 🎲";
+      
+      // مصفوفة الجوائز العشوائية واحتمالاتها
+      const prizes = [
+        { text: "حظ أوفر! (0 عملة)", amount: 0 },
+        { text: "🎉 فزت بـ 100 عملة!", amount: 100 },
+        { text: "🎁 فزت بـ 500 عملة!", amount: 500 },
+        { text: "🔥 فزت بـ 1,000 عملة!", amount: 1000 },
+        { text: "💎 الجائزة الكبرى! 5,000 عملة!", amount: 5000 }
+      ];
+
+      // محاكاة الانتظار للتدوير (1.5 ثانية)
+      setTimeout(() => {
+        const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
+        balance += randomPrize.amount;
+        localStorage.setItem('maxi_balance', balance);
+        updateUI();
+
+        statusText.innerText = randomPrize.text;
+        alert(`نتيجة عجلة الحظ:\n${randomPrize.text}`);
+
+        btn.disabled = false;
+        btn.innerText = "🎯 تدوير العجلة الآن";
+      }, 1500);
     }
 
     function completeTask(id, reward) {
