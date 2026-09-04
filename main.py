@@ -8,8 +8,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 TOKEN_NAME = "Maxi Doge ($MAXI)"
 BOT_TOKEN = "8743057533:AAH8vVWILiPHBm4r2Vjp0vdAGkn4gh_KioM"
 
-# ضع هنا رابط موقعك المرفوع على GitHub Pages
-WEB_APP_URL = "https://YOUR-USERNAME.github.io/maxi-doge-app/"
+# رابط موقعك المباشر من GitHub Pages
+WEB_APP_URL = "https://boodym445-rgb.github.io/maxi-doge-app/"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_first_name = update.effective_user.first_name
@@ -22,7 +22,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     caption = (
         f"مرحباً بك يا {user_first_name} في تطبيق تعدين **{TOKEN_NAME}**! 🚀\n\n"
-        f"اضغط على الزر أدناه لفتح واجهة التعدين التفاعلية وابدأ بجمع العملات قبل موعد الإدراج في أواخر 2026."
+        f"اضغط على الزر أدناه لفتح واجهة التعدين التفاعلية وابدأ بجمع العملات قبل موعد الإدراج."
     )
     
     await update.message.reply_text(caption, reply_markup=reply_markup, parse_mode="Markdown")
